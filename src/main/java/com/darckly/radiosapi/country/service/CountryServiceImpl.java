@@ -61,6 +61,8 @@ public class CountryServiceImpl implements CountryService {
     countryDTO.setId(country.getId());
     countryDTO.setCode(country.getCode());
     countryDTO.setName(country.getName());
+    countryDTO.setCreatedAt(country.getCreatedAt());
+    countryDTO.setUpdatedAt(country.getUpdatedAt());
     return countryDTO;
   }
 
