@@ -1,4 +1,4 @@
-package com.darckly.radiosapi.controller;
+package com.darckly.radiosapi.category.controller;
 
 import java.util.List;
 
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.darckly.radiosapi.dto.CategoryCreateDTO;
-import com.darckly.radiosapi.dto.CategoryDTO;
-import com.darckly.radiosapi.service.CategoryService;
+import com.darckly.radiosapi.category.dto.CategoryCreateDTO;
+import com.darckly.radiosapi.category.dto.CategoryDTO;
+import com.darckly.radiosapi.category.service.CategoryService;
 
 @RestController
 @RequestMapping(path = "/api/v1/category")

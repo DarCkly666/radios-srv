@@ -1,4 +1,4 @@
-package com.darckly.radiosapi.dto;
+package com.darckly.radiosapi.category.dto;
 
 import lombok.Data;
 

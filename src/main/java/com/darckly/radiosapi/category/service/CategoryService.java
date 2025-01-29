@@ -1,8 +1,9 @@
-package com.darckly.radiosapi.service;
+package com.darckly.radiosapi.category.service;
 
-import com.darckly.radiosapi.dto.CategoryCreateDTO;
-import com.darckly.radiosapi.dto.CategoryDTO;
 import java.util.List;
+
+import com.darckly.radiosapi.category.dto.CategoryCreateDTO;
+import com.darckly.radiosapi.category.dto.CategoryDTO;
 
 public interface CategoryService {
   CategoryDTO createCategory(CategoryCreateDTO createDTO);

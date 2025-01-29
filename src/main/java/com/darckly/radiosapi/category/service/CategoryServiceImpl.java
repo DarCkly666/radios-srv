@@ -1,15 +1,15 @@
-package com.darckly.radiosapi.service;
+package com.darckly.radiosapi.category.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.darckly.radiosapi.dto.CategoryCreateDTO;
-import com.darckly.radiosapi.dto.CategoryDTO;
+import com.darckly.radiosapi.category.dto.CategoryCreateDTO;
+import com.darckly.radiosapi.category.dto.CategoryDTO;
+import com.darckly.radiosapi.category.model.Category;
+import com.darckly.radiosapi.category.repository.CategoryRepository;
 import com.darckly.radiosapi.exception.ResourceNotFoundException;
-import com.darckly.radiosapi.model.Category;
-import com.darckly.radiosapi.repository.CategoryRepository;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {

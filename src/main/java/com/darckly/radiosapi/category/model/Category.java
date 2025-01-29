@@ -1,4 +1,4 @@
-package com.darckly.radiosapi.model;
+package com.darckly.radiosapi.category.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
