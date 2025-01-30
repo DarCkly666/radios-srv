@@ -9,15 +9,19 @@ import com.darckly.radiosapi.country.dto.CountryCreateDTO;
 import com.darckly.radiosapi.country.dto.CountryDTO;
 import com.darckly.radiosapi.country.model.Country;
 import com.darckly.radiosapi.country.repository.CountryRepository;
+import com.darckly.radiosapi.exception.ConflictException;
 import com.darckly.radiosapi.exception.ResourceNotFoundException;
+import com.darckly.radiosapi.radio.repository.RadioRepository;
 
 @Service
 public class CountryServiceImpl implements CountryService {
 
   private final CountryRepository repository;
+  private final RadioRepository radioRepository;
 
-  public CountryServiceImpl(CountryRepository repository) {
+  public CountryServiceImpl(CountryRepository repository, RadioRepository radioRepository) {
     this.repository = repository;
+    this.radioRepository = radioRepository;
   }
 
   @Override
@@ -53,6 +57,9 @@ public class CountryServiceImpl implements CountryService {
   @Override
   public void delete(Long id) {
     Country country = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country not found."));
+    if (radioRepository.existsByCountryId(id)) {
+      throw new ConflictException("Can not delete country because it has some references.");
+    }
     repository.delete(country);
   }
 

@@ -7,5 +7,7 @@ import com.darckly.radiosapi.radio.model.Radio;
 
 @Repository
 public interface RadioRepository extends JpaRepository<Radio, Long> {
+  boolean existsByCategoryId(Long id);
 
+  boolean existsByCountryId(Long id);
 }

@@ -21,6 +21,15 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
   }
 
+  @ExceptionHandler(ConflictException.class)
+  public ResponseEntity<?> handleConflictException(ConflictException ex, WebRequest request) {
+    ErrorDetails errorDetails = new ErrorDetails(
+        new Date(),
+        ex.getMessage(),
+        request.getDescription(false));
+    return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<?> handleServerException(Exception ex, WebRequest request) {
     ErrorDetails errorDetails = new ErrorDetails(

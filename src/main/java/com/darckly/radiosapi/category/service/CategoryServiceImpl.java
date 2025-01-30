@@ -9,15 +9,19 @@ import com.darckly.radiosapi.category.dto.CategoryCreateDTO;
 import com.darckly.radiosapi.category.dto.CategoryDTO;
 import com.darckly.radiosapi.category.model.Category;
 import com.darckly.radiosapi.category.repository.CategoryRepository;
+import com.darckly.radiosapi.exception.ConflictException;
 import com.darckly.radiosapi.exception.ResourceNotFoundException;
+import com.darckly.radiosapi.radio.repository.RadioRepository;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
   private final CategoryRepository repository;
+  private final RadioRepository radioRepository;
 
-  public CategoryServiceImpl(CategoryRepository repository) {
+  public CategoryServiceImpl(CategoryRepository repository, RadioRepository radioRepository) {
     this.repository = repository;
+    this.radioRepository = radioRepository;
   }
 
   @Override
@@ -53,6 +57,9 @@ public class CategoryServiceImpl implements CategoryService {
   @Override
   public void deleteCategory(Long id) {
     Category category = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found."));
+    if (radioRepository.existsByCategoryId(id)) {
+      throw new ConflictException("Can not delete category because it has some references.");
+    }
     repository.delete(category);
   }
 
