@@ -10,4 +10,6 @@ public interface RadioRepository extends JpaRepository<Radio, Long> {
   boolean existsByCategoryId(Long id);
 
   boolean existsByCountryId(Long id);
+
+  boolean existsByImageId(Long id);
 }

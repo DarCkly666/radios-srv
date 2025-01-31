@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.darckly.radiosapi.Image.model.Image;
 import com.darckly.radiosapi.category.model.Category;
 import com.darckly.radiosapi.country.model.Country;
 
@@ -36,11 +37,9 @@ public class Radio {
   @Column(name = "url", nullable = false, length = 250)
   private String url;
 
-  @Column(name = "image_large", nullable = false, length = 250)
-  private String imageLarge;
-
-  @Column(name = "image_thumbnail", nullable = false, length = 250)
-  private String imageThumbnail;
+  @ManyToOne
+  @JoinColumn(name = "image_id", nullable = false)
+  private Image image;
 
   @ManyToOne
   @JoinColumn(name = "category_id", nullable = false)

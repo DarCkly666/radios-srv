@@ -11,9 +11,7 @@ public class RadioCreateDTO {
 
   private String url;
 
-  private String imageLarge;
-
-  private String imageThumbnail;
+  private Long imageId;
 
   private Long categoryId;
 

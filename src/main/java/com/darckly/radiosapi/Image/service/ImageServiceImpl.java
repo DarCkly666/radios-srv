@@ -17,7 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.darckly.radiosapi.Image.dto.ImageDTO;
 import com.darckly.radiosapi.Image.model.Image;
 import com.darckly.radiosapi.Image.repository.ImageRepository;
+import com.darckly.radiosapi.exception.BadRequestException;
+import com.darckly.radiosapi.exception.ConflictException;
 import com.darckly.radiosapi.exception.ResourceNotFoundException;
+import com.darckly.radiosapi.exception.UnsupportedMediaTypeException;
+import com.darckly.radiosapi.radio.repository.RadioRepository;
 
 import jakarta.annotation.PostConstruct;
 import net.coobird.thumbnailator.Thumbnails;
@@ -26,10 +30,12 @@ import net.coobird.thumbnailator.Thumbnails;
 public class ImageServiceImpl implements ImageService {
 
   private final ImageRepository repository;
+  private final RadioRepository radioRepository;
   private final Path rootLocation;
 
-  public ImageServiceImpl(ImageRepository repository) {
+  public ImageServiceImpl(ImageRepository repository, RadioRepository radioRepository) {
     this.repository = repository;
+    this.radioRepository = radioRepository;
     rootLocation = Paths.get("uploads/images");
   }
 
@@ -57,6 +63,21 @@ public class ImageServiceImpl implements ImageService {
 
   @Override
   public ImageDTO create(MultipartFile file) {
+
+    if (file.isEmpty()) {
+      throw new BadRequestException("File is empty.");
+    }
+
+    String contentType = file.getContentType();
+    if (contentType == null || !contentType.startsWith("image/")) {
+      throw new UnsupportedMediaTypeException("File is not an image.");
+    }
+
+    String originalFilename = file.getOriginalFilename();
+    if (originalFilename == null || !isImageExtension(originalFilename)) {
+      throw new BadRequestException("File is not an image.");
+    }
+
     try {
       // Generate files name
       String originalFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
@@ -90,7 +111,34 @@ public class ImageServiceImpl implements ImageService {
   public void delete(Long id) {
     Image image = repository.findById(id).orElseThrow(
         () -> new ResourceNotFoundException("Image not found."));
+
+    if (radioRepository.existsByImageId(id)) {
+      throw new ConflictException("Can not delete image because it has some references.");
+    }
+
+    try {
+
+      Path originalPath = Paths.get(image.getOriginalPath().substring(1));
+      Path thumbnailPath = Paths.get(image.getThumbnailPath().substring(1));
+
+      if (Files.exists(originalPath)) {
+        Files.delete(originalPath);
+      }
+
+      if (Files.exists(thumbnailPath)) {
+        Files.delete(thumbnailPath);
+      }
+
+    } catch (IOException e) {
+      throw new RuntimeException("Error deleting files: " + e.getMessage());
+    }
     repository.delete(image);
+  }
+
+  private boolean isImageExtension(String filename) {
+    String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+    return extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png")
+        || extension.equals("gif") || extension.equals("bmp") || extension.equals("webp");
   }
 
   private ImageDTO mapToDTO(Image image) {

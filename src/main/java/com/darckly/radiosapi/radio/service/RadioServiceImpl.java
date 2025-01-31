@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.darckly.radiosapi.Image.model.Image;
+import com.darckly.radiosapi.Image.repository.ImageRepository;
 import com.darckly.radiosapi.category.dto.CategoryResponseDTO;
 import com.darckly.radiosapi.category.model.Category;
 import com.darckly.radiosapi.category.repository.CategoryRepository;
@@ -18,17 +21,19 @@ import com.darckly.radiosapi.radio.model.Radio;
 import com.darckly.radiosapi.radio.repository.RadioRepository;
 
 @Service
-public class RadioServideImpl implements RadioService {
+public class RadioServiceImpl implements RadioService {
 
   private final RadioRepository repository;
   private final CountryRepository countryRepository;
   private final CategoryRepository categoryRepository;
+  private final ImageRepository imageRepository;
 
-  public RadioServideImpl(RadioRepository repository, CountryRepository countryRepository,
-      CategoryRepository categoryRepository) {
+  public RadioServiceImpl(RadioRepository repository, CountryRepository countryRepository,
+      CategoryRepository categoryRepository, ImageRepository imageRepository) {
     this.repository = repository;
     this.countryRepository = countryRepository;
     this.categoryRepository = categoryRepository;
+    this.imageRepository = imageRepository;
   }
 
   @Override
@@ -46,6 +51,7 @@ public class RadioServideImpl implements RadioService {
     return mapToDTO(radio);
   }
 
+  @Transactional
   @Override
   public RadioDTO create(RadioCreateDTO createDTO) {
     Country country = countryRepository.findById(createDTO.getCountryId())
@@ -54,12 +60,14 @@ public class RadioServideImpl implements RadioService {
     Category category = categoryRepository.findById(createDTO.getCategoryId())
         .orElseThrow(() -> new ResourceNotFoundException("Category not found."));
 
+    Image image = imageRepository.findById(createDTO.getImageId())
+        .orElseThrow(() -> new ResourceNotFoundException("Image not found."));
+
     Radio radio = new Radio();
     radio.setName(createDTO.getName());
     radio.setDescription(createDTO.getDescription());
     radio.setUrl(createDTO.getUrl());
-    radio.setImageLarge(createDTO.getImageLarge());
-    radio.setImageThumbnail(createDTO.getImageThumbnail());
+    radio.setImage(image);
     radio.setCategory(category);
     radio.setCountry(country);
 
@@ -78,11 +86,13 @@ public class RadioServideImpl implements RadioService {
     Country country = countryRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Country not found."));
 
+    Image image = imageRepository.findById(updateDTO.getImageId())
+        .orElseThrow(() -> new ResourceNotFoundException("Image not found."));
+
     radio.setName(updateDTO.getName());
     radio.setDescription(updateDTO.getDescription());
     radio.setUrl(updateDTO.getUrl());
-    radio.setImageLarge(updateDTO.getImageLarge());
-    radio.setImageThumbnail(updateDTO.getImageThumbnail());
+    radio.setImage(image);
     radio.setCategory(category);
     radio.setCountry(country);
 
@@ -103,8 +113,8 @@ public class RadioServideImpl implements RadioService {
     radioDTO.setName(radio.getName());
     radioDTO.setDescription(radio.getDescription());
     radioDTO.setUrl(radio.getUrl());
-    radioDTO.setImageLarge(radio.getImageLarge());
-    radioDTO.setImageThumbnail(radio.getImageThumbnail());
+    radioDTO.setImageLarge(radio.getImage().getOriginalPath());
+    radioDTO.setImageThumbnail(radio.getImage().getThumbnailPath());
     radioDTO.setCategory(
         new CategoryResponseDTO(
             radio.getCategory().getId(),
