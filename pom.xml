@@ -67,6 +67,12 @@
 			<artifactId>thumbnailator</artifactId>
 			<version>0.4.19</version>
 		</dependency>
+
+		<!-- Security -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
